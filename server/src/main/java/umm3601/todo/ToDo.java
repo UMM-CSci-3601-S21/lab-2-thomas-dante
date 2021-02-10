@@ -6,5 +6,4 @@ public class ToDo {
   public boolean status;
   public String body;
   public String category;
-
 }
