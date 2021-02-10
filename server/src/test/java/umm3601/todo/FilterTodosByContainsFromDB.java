@@ -10,6 +10,10 @@ import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 
+/**
+ * Tests umm3601.todo.ToDoDatabase filterTodosByBody and listTodos with _body_ query
+ * parameters
+ */
 public class FilterTodosByContainsFromDB {
 
   @Test
