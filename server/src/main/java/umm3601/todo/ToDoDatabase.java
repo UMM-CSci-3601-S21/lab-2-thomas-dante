@@ -52,8 +52,26 @@ public class ToDoDatabase {
   public ToDo[] listTodos(Map<String, List<String>> queryParams) {
     ToDo[] filteredTodos = allTodos;
 
+    // Filter body if defined
+    if (queryParams.containsKey("contains")) {
+      String targetString = queryParams.get("contains").get(0);
+      filteredTodos = filterTodosByBody(filteredTodos, targetString);
+    }
+
     return filteredTodos;
   }
 
+
+  /**
+   * Get an array of all the users having the target company.
+   *
+   * @param todos        the list of users to filter by company
+   * @param targetBody the target company to look for
+   * @return an array of all the users from the given list that have the target
+   *         company
+   */
+  public ToDo[] filterTodosByBody(ToDo[] todos, String targetString) {
+    return Arrays.stream(todos).filter(x -> x.body.contains(targetString)).toArray(ToDo[]::new);
+  }
 
 }
