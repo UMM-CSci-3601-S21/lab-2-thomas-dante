@@ -1,10 +1,16 @@
 package umm3601.todo;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -12,7 +18,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 
 import io.javalin.core.validation.Validator;
-
+import io.javalin.http.BadRequestResponse;
 import io.javalin.http.Context;
 import io.javalin.http.NotFoundResponse;
 
@@ -60,6 +66,47 @@ public class ToDoControllerSpec {
     when(ctx.pathParam("id", String.class)).thenReturn(new Validator<String>("nonexistent", "", "id"));
     Assertions.assertThrows(NotFoundResponse.class, () -> {
       todoController.getTodo(ctx);
+    });
+  }
+
+  @Test
+  public void GET_to_request_contains_Sunt_todos() throws IOException {
+    Map<String, List<String>> queryParams = new HashMap<>();
+    queryParams.put("contains", Arrays.asList(new String[] { "Sunt" }));
+
+    when(ctx.queryParamMap()).thenReturn(queryParams);
+    todoController.getTodos(ctx);
+
+    // Confirm that all the todos contain Sunt.
+    ArgumentCaptor<ToDo[]> argument = ArgumentCaptor.forClass(ToDo[].class);
+    verify(ctx).json(argument.capture());
+    for (ToDo todo : argument.getValue()) {
+      assertTrue(todo.body.contains("Sunt"));
+    }
+  }
+
+  @Test
+  public void GET_to_request_todos_with_limit() {
+    // We'll set the requested "limit" to be 15.
+    Map<String, List<String>> queryParams = new HashMap<>();
+    queryParams.put("limit", Arrays.asList(new String[] { "15" }));
+
+    ToDo[] limitTwoTodos = db.listTodos(queryParams);
+    assertEquals(15, limitTwoTodos.length, "Incorrect number of todos listed, not 2");
+  }
+
+  @Test
+  public void GET_to_request_todos_with_illegal_limit() {
+    // We'll set the requested "limit" to be a string ("abc")
+    // that can't be parsed to a number.
+    Map<String, List<String>> queryParams = new HashMap<>();
+    queryParams.put("limit", Arrays.asList(new String[] { "abc" }));
+
+    when(ctx.queryParamMap()).thenReturn(queryParams);
+    // This should now throw a `BadRequestResponse` exception because
+    // our request has an limit that can't be parsed to a number.
+    Assertions.assertThrows(BadRequestResponse.class, () -> {
+      todoController.getTodos(ctx);
     });
   }
 

@@ -58,20 +58,43 @@ public class ToDoDatabase {
       filteredTodos = filterTodosByBody(filteredTodos, targetString);
     }
 
+    //Limit number of todos shown if defined
+    if (queryParams.containsKey("limit")) {
+      String todoParam = queryParams.get("limit").get(0);
+      try {
+        int targetAge = Integer.parseInt(todoParam);
+        filteredTodos = limitTodos(filteredTodos, targetAge);
+      } catch (NumberFormatException e) {
+        throw new BadRequestResponse("Specified limit '" + todoParam + "' can't be parsed to an integer");
+      }
+    }
+
     return filteredTodos;
   }
 
 
   /**
-   * Get an array of all the users having the target company.
+   * Get an array of all the users having the target string in their body.
    *
-   * @param todos        the list of users to filter by company
-   * @param targetBody the target company to look for
-   * @return an array of all the users from the given list that have the target
-   *         company
+   * @param todos        the list of todos to filter by strings
+   * @param targetString the target string to look for
+   * @return an array of all the todos from the given list that have the target
+   *         string
    */
   public ToDo[] filterTodosByBody(ToDo[] todos, String targetString) {
     return Arrays.stream(todos).filter(x -> x.body.contains(targetString)).toArray(ToDo[]::new);
+  }
+
+
+  /**
+   * Only displays a limited amount of entires.
+   *
+   * @param todos     the list of users to limit the number of
+   * @param targetLimit the maximum allowed entries
+   * @return an array of max size the targetLimit
+   */
+  public ToDo[] limitTodos(ToDo[] todos, Integer targetLimit) {
+    return Arrays.stream(todos).limit(targetLimit).toArray(ToDo[]::new);
   }
 
 }
