@@ -6,6 +6,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+import com.fasterxml.jackson.annotation.JacksonInject.Value;
 import com.google.gson.Gson;
 
 import io.javalin.http.BadRequestResponse;
@@ -58,6 +59,12 @@ public class ToDoDatabase {
       filteredTodos = filterTodosByBody(filteredTodos, targetString);
     }
 
+    // Filter status if defined
+    if (queryParams.containsKey("status")) {
+      String targetString = queryParams.get("status").get(0);
+      filteredTodos = filterTodosByStatus(filteredTodos, targetString);
+    }
+
     //Limit number of todos shown if defined
     if (queryParams.containsKey("limit")) {
       String todoParam = queryParams.get("limit").get(0);
@@ -68,6 +75,7 @@ public class ToDoDatabase {
         throw new BadRequestResponse("Specified limit '" + todoParam + "' can't be parsed to an integer");
       }
     }
+
 
     return filteredTodos;
   }
@@ -83,6 +91,25 @@ public class ToDoDatabase {
    */
   public ToDo[] filterTodosByBody(ToDo[] todos, String targetString) {
     return Arrays.stream(todos).filter(x -> x.body.contains(targetString)).toArray(ToDo[]::new);
+  }
+
+  /**
+   * Get an array of all the users having the target status.
+   *
+   * @param todos        the list of todos to filter by status
+   * @param targetString the target status to look for
+   * @return an array of all the todos from the given list that have the target
+   *         status
+   */
+  public ToDo[] filterTodosByStatus(ToDo[] todos, String targetString) {
+    ToDo[] status = null;
+    if (targetString.equals("complete")){
+      status = Arrays.stream(todos).filter(x -> (Boolean.toString(x.status)).contains("true")).toArray(ToDo[]::new);
+    }
+    else{
+      status = Arrays.stream(todos).filter(x -> Boolean.toString(x.status).contains("false")).toArray(ToDo[]::new);
+    }
+    return status;
   }
 
 

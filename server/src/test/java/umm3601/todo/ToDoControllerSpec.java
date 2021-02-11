@@ -114,7 +114,7 @@ public class ToDoControllerSpec {
   @Test
   public void GET_to_request_status_true() throws IOException {
     Map<String, List<String>> queryParams = new HashMap<>();
-    queryParams.put("status", Arrays.asList(new String[] { "true" }));
+    queryParams.put("status", Arrays.asList(new String[] { "complete" }));
 
     when(ctx.queryParamMap()).thenReturn(queryParams);
     todoController.getTodos(ctx);
@@ -130,7 +130,7 @@ public class ToDoControllerSpec {
   @Test
   public void GET_to_request_status_false() throws IOException {
     Map<String, List<String>> queryParams = new HashMap<>();
-    queryParams.put("status", Arrays.asList(new String[] { "false" }));
+    queryParams.put("status", Arrays.asList(new String[] { "incomplete" }));
 
     when(ctx.queryParamMap()).thenReturn(queryParams);
     todoController.getTodos(ctx);
