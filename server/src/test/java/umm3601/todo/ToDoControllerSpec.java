@@ -1,6 +1,7 @@
 package umm3601.todo;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -69,6 +70,32 @@ public class ToDoControllerSpec {
   }
 
   @Test
+  public void GET_to_request_contains_Sunt_todos() throws IOException {
+    Map<String, List<String>> queryParams = new HashMap<>();
+    queryParams.put("contains", Arrays.asList(new String[] { "Sunt" }));
+
+    when(ctx.queryParamMap()).thenReturn(queryParams);
+    todoController.getTodos(ctx);
+
+    // Confirm that all the todos contain Sunt.
+    ArgumentCaptor<ToDo[]> argument = ArgumentCaptor.forClass(ToDo[].class);
+    verify(ctx).json(argument.capture());
+    for (ToDo todo : argument.getValue()) {
+      assertTrue(todo.body.contains("Sunt"));
+    }
+  }
+
+  @Test
+  public void GET_to_request_todos_with_limit() {
+    // We'll set the requested "limit" to be 15.
+    Map<String, List<String>> queryParams = new HashMap<>();
+    queryParams.put("limit", Arrays.asList(new String[] { "15" }));
+
+    ToDo[] limitTwoTodos = db.listTodos(queryParams);
+    assertEquals(15, limitTwoTodos.length, "Incorrect number of todos listed, not 2");
+  }
+
+  @Test
   public void GET_to_request_todos_with_illegal_limit() {
     // We'll set the requested "limit" to be a string ("abc")
     // that can't be parsed to a number.
@@ -77,7 +104,7 @@ public class ToDoControllerSpec {
 
     when(ctx.queryParamMap()).thenReturn(queryParams);
     // This should now throw a `BadRequestResponse` exception because
-    // our request has an age that can't be parsed to a number.
+    // our request has an limit that can't be parsed to a number.
     Assertions.assertThrows(BadRequestResponse.class, () -> {
       todoController.getTodos(ctx);
     });
