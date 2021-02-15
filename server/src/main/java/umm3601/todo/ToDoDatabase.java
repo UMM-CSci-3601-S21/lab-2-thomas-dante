@@ -53,6 +53,18 @@ public class ToDoDatabase {
   public ToDo[] listTodos(Map<String, List<String>> queryParams) {
     ToDo[] filteredTodos = allTodos;
 
+    // Filter owner if defined
+    if (queryParams.containsKey("owner")) {
+      String targetString = queryParams.get("owner").get(0);
+      filteredTodos = filterTodosByOwner(filteredTodos, targetString);
+    }
+
+    // Filter category if defined
+    if (queryParams.containsKey("category")) {
+      String targetString = queryParams.get("category").get(0);
+      filteredTodos = filterTodosByCategory(filteredTodos, targetString);
+    }
+
     // Filter body if defined
     if (queryParams.containsKey("contains")) {
       String targetString = queryParams.get("contains").get(0);
@@ -80,9 +92,32 @@ public class ToDoDatabase {
     return filteredTodos;
   }
 
+  /**
+   * Get an array of all the todos with a specific owner.
+   *
+   * @param todos        the list of todos to filter by owner
+   * @param targetOwner the target owner to look for
+   * @return an array of all the todos from the given list that have the target
+   *         string
+   */
+  public ToDo[] filterTodosByOwner(ToDo[] todos, String targetOwner) {
+    return Arrays.stream(todos).filter(x -> x.owner.equals(targetOwner)).toArray(ToDo[]::new);
+  }
 
   /**
-   * Get an array of all the users having the target string in their body.
+   * Get an array of all the todos with a specific category.
+   *
+   * @param todos        the list of todos to filter by category
+   * @param targetCategory the target category to look for
+   * @return an array of all the todos from the given list that have the target
+   *         string
+   */
+  public ToDo[] filterTodosByCategory(ToDo[] todos, String targetCategory) {
+    return Arrays.stream(todos).filter(x -> x.category.equals(targetCategory)).toArray(ToDo[]::new);
+  }
+
+  /**
+   * Get an array of all the todos having the target string in their body.
    *
    * @param todos        the list of todos to filter by strings
    * @param targetString the target string to look for
@@ -103,7 +138,7 @@ public class ToDoDatabase {
    */
   public ToDo[] filterTodosByStatus(ToDo[] todos, String targetString) {
     ToDo[] status = null;
-    if (targetString.equals("complete")){
+    if ("complete".equals(targetString)){
       status = Arrays.stream(todos).filter(x -> (Boolean.toString(x.status)).contains("true")).toArray(ToDo[]::new);
     }
     else{

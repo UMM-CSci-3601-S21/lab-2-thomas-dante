@@ -87,6 +87,38 @@ public class ToDoControllerSpec {
   }
 
   @Test
+  public void GET_to_request_owner_Fry_todos() throws IOException {
+    Map<String, List<String>> queryParams = new HashMap<>();
+    queryParams.put("owner", Arrays.asList(new String[] { "Fry" }));
+
+    when(ctx.queryParamMap()).thenReturn(queryParams);
+    todoController.getTodos(ctx);
+
+    // Confirm that all the todos are owned by Fry.
+    ArgumentCaptor<ToDo[]> argument = ArgumentCaptor.forClass(ToDo[].class);
+    verify(ctx).json(argument.capture());
+    for (ToDo todo : argument.getValue()) {
+      assertEquals("Fry", todo.owner);
+    }
+  }
+
+  @Test
+  public void GET_to_request_category_homework_todos() throws IOException {
+    Map<String, List<String>> queryParams = new HashMap<>();
+    queryParams.put("category", Arrays.asList(new String[] { "homework" }));
+
+    when(ctx.queryParamMap()).thenReturn(queryParams);
+    todoController.getTodos(ctx);
+
+    // Confirm that all the todos are in the 'homework' category.
+    ArgumentCaptor<ToDo[]> argument = ArgumentCaptor.forClass(ToDo[].class);
+    verify(ctx).json(argument.capture());
+    for (ToDo todo : argument.getValue()) {
+      assertEquals("homework", todo.category);
+    }
+  }
+
+  @Test
   public void GET_to_request_todos_with_limit() {
     // We'll set the requested "limit" to be 15.
     Map<String, List<String>> queryParams = new HashMap<>();
