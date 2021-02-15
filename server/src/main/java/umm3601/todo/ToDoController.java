@@ -17,7 +17,7 @@ public class ToDoController {
    * internally so that (subsets of) todos can be returned in response to
    * requests.
    *
-   * @param todoDatabase the `Database` containing todo data
+   * @param database the `Database` containing todo data
    */
   public ToDoController(ToDoDatabase database) {
     this.database = database;

@@ -103,7 +103,7 @@ public class ToDoDatabase {
    */
   public ToDo[] filterTodosByStatus(ToDo[] todos, String targetString) {
     ToDo[] status = null;
-    if (targetString.equals("complete")){
+    if ("complete".equals(targetString)){
       status = Arrays.stream(todos).filter(x -> (Boolean.toString(x.status)).contains("true")).toArray(ToDo[]::new);
     }
     else{
