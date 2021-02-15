@@ -6,7 +6,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-import com.fasterxml.jackson.annotation.JacksonInject.Value;
 import com.google.gson.Gson;
 
 import io.javalin.http.BadRequestResponse;
@@ -77,6 +76,12 @@ public class ToDoDatabase {
       filteredTodos = filterTodosByStatus(filteredTodos, targetString);
     }
 
+    // Order by desired order
+    if (queryParams.containsKey("orderBy")) {
+      String targetString = queryParams.get("orderBy").get(0);
+      filteredTodos = sortTodosBy(filteredTodos, targetString);
+    }
+
     //Limit number of todos shown if defined
     if (queryParams.containsKey("limit")) {
       String todoParam = queryParams.get("limit").get(0);
@@ -91,6 +96,38 @@ public class ToDoDatabase {
 
     return filteredTodos;
   }
+
+  /**
+   * Get an array of all the todos ordered a specific way.
+   *
+   * @param todos        the list of todos to order
+   * @param targetString the target way you want it ordered by
+   * @return an array of all the todos in order
+   */
+  public ToDo[] sortTodosBy(ToDo[] todos, String targetString) {
+
+    if("owner".equals(targetString)){
+      Arrays.sort(todos, (first, second) -> {
+        return first.owner.compareTo(second.owner);
+      });
+    }
+    if("category".equals(targetString)){
+      Arrays.sort(todos, (first, second) -> {
+        return first.category.compareTo(second.category);
+      });
+    }
+    if("body".equals(targetString)){
+      Arrays.sort(todos, (first, second) -> {
+        return first.body.compareTo(second.body);
+      });
+    }
+    if("status".equals(targetString)){
+      Arrays.sort(todos, (first, second) -> {
+        return Boolean.toString(first.status).compareTo(Boolean.toString(second.status));
+      });
+    }
+    return todos;
+}
 
   /**
    * Get an array of all the todos with a specific owner.
@@ -146,7 +183,6 @@ public class ToDoDatabase {
     }
     return status;
   }
-
 
   /**
    * Only displays a limited amount of entires.
