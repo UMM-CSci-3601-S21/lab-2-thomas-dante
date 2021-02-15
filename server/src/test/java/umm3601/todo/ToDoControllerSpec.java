@@ -103,6 +103,51 @@ public class ToDoControllerSpec {
   }
 
   @Test
+  public void GET_to_request_order_by_owner() throws IOException {
+    Map<String, List<String>> queryParams = new HashMap<>();
+    queryParams.put("orderBy", Arrays.asList(new String[] { "owner" }));
+
+    ToDo[] order = db.listTodos(queryParams);
+    for(int i = 0;i < order.length-1;i++){
+      assertTrue(order[i].owner.compareTo(order[i+1].owner) <= 0);
+    }
+    }
+
+  @Test
+  public void GET_to_request_order_by_body() throws IOException {
+    Map<String, List<String>> queryParams = new HashMap<>();
+    queryParams.put("orderBy", Arrays.asList(new String[] { "body" }));
+
+    ToDo[] order = db.listTodos(queryParams);
+    for(int i = 0;i < order.length-1;i++){
+      assertTrue(order[i].body.compareTo(order[i+1].body) <= 0);
+    }
+    }
+
+  @Test
+  public void GET_to_request_order_by_status() throws IOException {
+    Map<String, List<String>> queryParams = new HashMap<>();
+    queryParams.put("orderBy", Arrays.asList(new String[] { "status" }));
+
+    ToDo[] order = db.listTodos(queryParams);
+    for(int i = 0;i < order.length-1;i++){
+      assertTrue(Boolean.toString(order[i].status).compareTo(Boolean.toString(order[i+1].status)) <= 0);
+    }
+    }
+
+  @Test
+  public void GET_to_request_order_by_category() throws IOException {
+    Map<String, List<String>> queryParams = new HashMap<>();
+    queryParams.put("orderBy", Arrays.asList(new String[] { "category" }));
+
+    ToDo[] order = db.listTodos(queryParams);
+    for(int i = 0;i < order.length-1;i++){
+      assertTrue(order[i].category.compareTo(order[i+1].category) <= 0);
+    }
+    }
+
+
+  @Test
   public void GET_to_request_category_homework_todos() throws IOException {
     Map<String, List<String>> queryParams = new HashMap<>();
     queryParams.put("category", Arrays.asList(new String[] { "homework" }));
