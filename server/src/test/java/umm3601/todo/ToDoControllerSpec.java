@@ -220,4 +220,27 @@ public class ToDoControllerSpec {
     }
   }
 
+  @Test
+  public void GET_to_request_todo_specific() throws IOException {
+    Map<String, List<String>> queryParams = new HashMap<>();
+    queryParams.put("owner", Arrays.asList(new String[] { "Fry" }));
+    queryParams.put("category", Arrays.asList(new String[] { "homework" }));
+    queryParams.put("status", Arrays.asList(new String[] { "complete" }));
+    queryParams.put("contains", Arrays.asList(new String[] { "qu" }));
+    queryParams.put("orderBy", Arrays.asList(new String[] { "body" }));
+    queryParams.put("limit", Arrays.asList(new String[] { "1" }));
+
+
+    when(ctx.queryParamMap()).thenReturn(queryParams);
+    todoController.getTodos(ctx);
+
+    ArgumentCaptor<ToDo[]> argument = ArgumentCaptor.forClass(ToDo[].class);
+    verify(ctx).json(argument.capture());
+    for (ToDo todo : argument.getValue()) {
+      assertEquals("Fry", todo.owner);
+      assertTrue(todo.status);
+      assertEquals("Consectetur adipisicing pariatur sint magna do velit nisi. Sit do exercitation exercitation quis esse quis.", todo.body);
+    }
+    }
+
 }
